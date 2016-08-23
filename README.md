@@ -46,28 +46,32 @@ of values, the abstractional layer returns references to objects. That
 means, if two variables point to the same property, none of them will
 be outdated if the other one is being changed in place.
 
-    buffer = Weechat::Buffer.current
-    buffer.highlight_words = ["word1", "word2"]
-    buffer.highlight_words # => ["word1", "word2"]
+```ruby
+buffer = Weechat::Buffer.current
+buffer.highlight_words = ["word1", "word2"]
+buffer.highlight_words # => ["word1", "word2"]
 
-    buffer = Weechat::Buffer.all.last
-    buffer.lines_hidden? # => false
-    buffer.show          # displays the buffer in the current window
+buffer = Weechat::Buffer.all.last
+buffer.lines_hidden? # => false
+buffer.show          # displays the buffer in the current window
 
-    buffer = Weechat::Buffer.current
-    a = buffer.short_name # => "weechat"
-    b = buffer.short_name # => "weechat"
-    a.replace("new name") # => "new name"
-    buffer.short_name     # => "new name"
-    b                     # => "new name"
+buffer = Weechat::Buffer.current
+a = buffer.short_name # => "weechat"
+b = buffer.short_name # => "weechat"
+a.replace("new name") # => "new name"
+buffer.short_name     # => "new name"
+b                     # => "new name"
+```
 
 References, however, won't be updated once an assignment was made
 to the property, just like with real Ruby objects:
 
-    buffer = Weechat::Buffer.current
-    a = buffer.short_name          # => "weechat"
-    buffer.short_name = "new name" # => "new name"
-    a                              # => "weechat"
+```ruby
+buffer = Weechat::Buffer.current
+a = buffer.short_name          # => "weechat"
+buffer.short_name = "new name" # => "new name"
+a                              # => "weechat"
+```
 
 Programatically accessing properties
 ------------------------------------
@@ -160,27 +164,29 @@ additional things when loading the script, like creating commands.
 A similar hook, `teardown`, will be called when the script is
 unloaded.
 
-    require 'weechat'
-    include Weechat
+```ruby
+require 'weechat'
+include Weechat
 
-    @script = {
-      :name => "testscript",                           # must not be empty
-      :author => "Dominik Honnef <dominikho@gmx.net>", # defaults to "Anonymous"
-      :version => "0.0.1",                             # defaults to "0.0.1"
-      :license => 'GPL3',                              # defaults to "unlicensed"
-      :gem_version => '0.0.1',                         # defaults to "0.0.1" and specifies the
-                                                       # the minimum required version of the gem
-      :description => "this serves as a test suite and example file for the weechat gem",
-      # defaults to "Empty script description
-    }
+@script = {
+  :name => "testscript",                           # must not be empty
+  :author => "Dominik Honnef <dominikho@gmx.net>", # defaults to "Anonymous"
+  :version => "0.0.1",                             # defaults to "0.0.1"
+  :license => 'GPL3',                              # defaults to "unlicensed"
+  :gem_version => '0.0.1',                         # defaults to "0.0.1" and specifies the
+                                                   # the minimum required version of the gem
+  :description => "this serves as a test suite and example file for the weechat gem",
+  # defaults to "Empty script description
+}
 
-    def setup
-      # do custom stuff when the script is being loaded
-    end
+def setup
+  # do custom stuff when the script is being loaded
+end
 
-    def teardown
-      # do custom stuff when the script is being unloaded
-    end
+def teardown
+  # do custom stuff when the script is being unloaded
+end
+```
 
 Commands
 --------
@@ -203,19 +209,21 @@ internal representation. While this allows one to store any kind of
 objects, it is more than unlikely that a user is willing to change
 those settings using /set, so use those objects sparingly.
 
-    # ...
-    @config = Script::Config.new(
-                                 'some_list'    => [Array, []],
-                                 'some_boolean' => [Boolean, true],
-                                 'some_color'   => [Color, 'red'],
-                                )
-    def setup
-      @config.some_list # returns an array (either [] if the option
-                        # is not set yet or whatever has been set by the user)
+```ruby
+# ...
+@config = Script::Config.new(
+                             'some_list'    => [Array, []],
+                             'some_boolean' => [Boolean, true],
+                             'some_color'   => [Color, 'red'],
+                            )
+def setup
+  @config.some_list # returns an array (either [] if the option
+                    # is not set yet or whatever has been set by the user)
 
-      @config.some_list << "new item" # automatically converts the new array
-                                      # to a string and store it in the config
-    end
+  @config.some_list << "new item" # automatically converts the new array
+                                  # to a string and store it in the config
+end
+```
 
 ### Implementing own objects
 
@@ -256,23 +264,26 @@ one has to use callbacks (not to be confused with WeeChat callbacks),
 which will get called as soon as the requested information are
 available.
 
-    user.real_name do |rn|
-      # this will get called as soon as the real_name is available.
-      # rn will contain the requested information
-    end
+```ruby
+user.real_name do |rn|
+  # this will get called as soon as the real_name is available.
+  # rn will contain the requested information
+end
+```
 
 Information like a user's real name are internally requested and
 handled using the {Weechat::IRC::Whois} class, which can be accessed
 using {Weechat::IRC::User#whois}, in the same fashion a single property can be requested:
 
-    user.whois do |whois|
-      # one can either rely on Whois#method_missing ...
-      whois.real_name
+```ruby
+user.whois do |whois|
+  # one can either rely on Whois#method_missing ...
+  whois.real_name
 
-      # or access the data hash directly
-      whois.data # => {:real_name => "...", ...}
-    end
-
+  # or access the data hash directly
+  whois.data # => {:real_name => "...", ...}
+end
+```
 
 Contributing to the project
 ===========================
